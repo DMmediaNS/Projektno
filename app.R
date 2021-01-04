@@ -153,14 +153,33 @@ podnosiocipojsuma <- Projectmedia %>%
     
     summarise(`UKUPNO DODELJENO U EVRIMA`= sum(`SREDSTVA U EVRIMA`)) 
 
-    podnosiocimediji<- Projectmedia %>%
+
+    podnosiocimediji <- Projectmedia
+    
+    podnosiocimediji$`NAZIV MEDIJA`[ podnosiocimediji$`NAZIV MEDIJA`== "Produkcija"] <- NA
+
+    podnosiocimediji<- podnosiocimediji %>%
     
     group_by(`PODNOSILAC PROJEKTA`) %>% 
         
-    summarize( `BROJ MEDIJA ZA KOJE JE PODNOSILAC PODNEO PROJEKTE` = n_distinct(`NAZIV MEDIJA`,na.rm = TRUE))
+    summarize( `BROJ IDENTIFIKOVANIH MEDIJA ZA KOJE JE PODNOSILAC APLICIRAO` = n_distinct(`NAZIV MEDIJA`,na.rm = TRUE))
 
+    podnosiocipojsuma <- Projectmedia %>%
+      
+      
+      group_by(`PODNOSILAC PROJEKTA`) %>%
+      
+      summarise(`UKUPNO DODELJENO U EVRIMA`= sum(`SREDSTVA U EVRIMA`)) 
+    
+    podnosiociorgani<- Projectmedia %>%
+      
+      group_by(`PODNOSILAC PROJEKTA`) %>% 
+      
+      summarize( `BROJ ORGANA OD KOJIH JE PODNOSILAC DOBIO SREDSTVA` = n_distinct(`ORGAN KOJI RASPISUJE KONKURS/OPŠTINA`))  
+    
+    
 podnosiocitotal <- left_join(podnosiocipojsuma, podnosiocimediji, by = "PODNOSILAC PROJEKTA")
-
+podnosiocitotal <-left_join(podnosiocitotal, podnosiociorgani,by = "PODNOSILAC PROJEKTA")
 #Formatiranje kolone sa sredstvima
 
 podnosiocitotal$`UKUPNO DODELJENO U EVRIMA` <- format( 
@@ -185,7 +204,6 @@ barcharttop4podnosioci <- Projectmedia %>%
     
 barcharttop4podnosioci$`PODNOSILAC PROJEKTA`[barcharttop4podnosioci$`PODNOSILAC PROJEKTA`=="RADIO TELEVIZIJA NOVI PAZAR DOO NOVI PAZAR"] <- "RADIO TELEVIZIJA NOVI PAZAR"
 barcharttop4podnosioci$`PODNOSILAC PROJEKTA`[barcharttop4podnosioci$`PODNOSILAC PROJEKTA`=="RADIO TELEVIZIJA BELLE AMIE DOO NIŠ"] <- "RADIO TELEVIZIJA BELLE AMIE"
-barcharttop4podnosioci$`PODNOSILAC PROJEKTA`[barcharttop4podnosioci$`PODNOSILAC PROJEKTA`=="RADIODIFUZNO PREDUZEĆE STUDIO B DOO BEOGRAD (VRAČAR)"] <- "RADIODIFUZNO PREDUZEĆE STUDIO B"
     
 barcharttop4podnosioci<- barcharttop4podnosioci %>%
     mutate(Info = paste('<br>', "Podnosilac:", 
@@ -578,6 +596,7 @@ barcharttop4podnosiocipoksek$`PODNOSILAC PROJEKTA`[barcharttop4podnosiocipoksek$
 
 barcharttop4podnosiocipoksek$`PODNOSILAC PROJEKTA`[barcharttop4podnosiocipoksek$`PODNOSILAC PROJEKTA`=="SAVEZ GLUVIH I NAGLUVIH VOJVODINE AUDIOLOŠKI CENTAR"] <- "SAVEZ GLUVIH I NAGLUVIH VOJVODINE"
 
+
 # dodavanje kolone sa informacijama za pop-up
 
 barcharttop4podnosiocipoksek <- barcharttop4podnosiocipoksek %>%
@@ -749,7 +768,7 @@ barcharttop4podnosiociloksam <- Projectmedia %>%
     
 barcharttop4podnosiociloksam$`PODNOSILAC PROJEKTA`[barcharttop4podnosiociloksam$`PODNOSILAC PROJEKTA`=="RADIO TELEVIZIJA NOVI PAZAR DOO NOVI PAZAR"] <- "RADIO TELEVIZIJA NOVI PAZAR"
 barcharttop4podnosiociloksam$`PODNOSILAC PROJEKTA`[barcharttop4podnosiociloksam$`PODNOSILAC PROJEKTA`=="RADIO TELEVIZIJA BELLE AMIE DOO NIŠ"] <- "RADIO TELEVIZIJA BELLE AMIE"
-barcharttop4podnosiociloksam$`PODNOSILAC PROJEKTA`[barcharttop4podnosiociloksam$`PODNOSILAC PROJEKTA`=="RADIODIFUZNO PREDUZEĆE STUDIO B DOO BEOGRAD (VRAČAR)"] <- "RADIODIFUZNO PREDUZEĆE STUDIO B"
+
 
 
 barcharttop4podnosiociloksam <- barcharttop4podnosiociloksam %>%
@@ -860,9 +879,7 @@ ui <-
                                   
                                   kao i celokupnu publikaciju u kojoj se pored metodoloških napomena i preporuka, nalazi i tekst 
                                   
-                                  o istorijatu konkursnog sufinansiranja u Srbiji. Kod za kreiranje same aplikacije nalazi se na sledećem ",
-                                  
-                                  a("linku.", href = "https://github.com/Centarzaodrzivezajednice/Projektno-sufinansiranje-medija")," 
+                                  o istorijatu konkursnog sufinansiranja u Srbiji.
                                   
                                   Podaci su takođe dostupni i na", a(" Portalu otvorenih podataka.", href = "https://data.gov.rs/sr/"), align ="justify"),
                               
@@ -1053,8 +1070,7 @@ ui <-
                      
                      downloadBttn ("downloaddatabase1", "Preuzmi.XLSX", style = "gradient", size = "sm"),
                      
-                     h4("Ovde možete da skinete metodologiju sa detaljima kako su prikupljeni podaci i publikaciju. Online verziju publikacije koja se redovno ažurira
-                        možete naći",a(" ovde.", href = "https://projektnosufinansiranjehtmlizvestaj.netlify.app/"), align = "justify"),
+                     h4("Ovde možete da skinete metodologiju sa detaljima kako su prikupljeni podaci i publikaciju." , align = "justify"),
                      
                      # ubacivanje tastera za skidanje metodologije i analize
                      
@@ -1062,7 +1078,21 @@ ui <-
                      
                      downloadBttn ("downloadanalysis", "Publikacija", style = "gradient", size = "sm", color = "royal"),
                      
-                     h4("Sva rešenja koja su dobijena od lokalnih samouprava možete da pogledate na sledećem ", a("linku.", href = "https://docs.google.com/spreadsheets/d/1ajgnqWStLHUQ8XUA1LU0n5_1KdqcAIef1A4e4391ORI/edit#gid=0"), align = "justify"), 
+                     h4(strong("Online verziju publikacije"), " koja se redovno ažurira
+                     
+                        možete naći",a(" ovde.", href = "https://projektnosufinansiranjehtmlpublikacija.netlify.app/"), " Sva rešenja koja su dobijena od lokalnih samouprava
+                        
+                        možete da pogledate na sledećem ", a("linku.", href = "https://docs.google.com/spreadsheets/d/1ajgnqWStLHUQ8XUA1LU0n5_1KdqcAIef1A4e4391ORI/edit#gid=0"), align = "justify"), 
+                        
+                       h4( " Kod za kreiranje same aplikacije nalazi se na sledećoj ",
+                                  
+                                  a("veb stranici.", href = "https://github.com/Centarzaodrzivezajednice/Projektno-sufinansiranje-medija"), "Sam kod i podaci mogu da se preuzmu 
+                           
+                           pod licencom", a("Creative Commons Zero v1.0 Universal.", href="https://creativecommons.org/publicdomain/zero/1.0/", align = "justify"), 
+                        
+                        " Iako je ovo najotvorenija moguća licenca, zaista bismo voleli da, ako budete koristili podatke ili kod za veb aplikaciju da nas o tome obavestite
+                        
+                        kako bi mogli da pratimo njenu dalju upotrebu i razvoj i za to vam se unapred zahvaljujemo. ", align = "justify"), 
                      
                      h4("Zbog kompleksnosti istraživanja i prikupljanja velike količine podataka, ukoliko imate neke ispravke
                                   
