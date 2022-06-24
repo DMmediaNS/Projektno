@@ -1,6 +1,6 @@
 #Rad servera i kreiranje tabela i grafikona
 
-server <- function(input, output, session){
+function(input, output, session){
   
   
   ##OPSTI PREGLED TAB
