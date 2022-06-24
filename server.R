@@ -1,6 +1,6 @@
 #Rad servera i kreiranje tabela i grafikona
 
-function(input, output, session){
+shinyServer(function(input, output, session){
   
   
   ##OPSTI PREGLED TAB
