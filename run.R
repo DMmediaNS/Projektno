@@ -15,7 +15,7 @@ options(scipen = 999)
 
 
 # run.R
-
+library(shiny)
 port <- Sys.getenv('PORT')
 
 shiny::runApp(
