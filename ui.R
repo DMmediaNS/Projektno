@@ -3,7 +3,7 @@
 
 #Kreiranje izgleda aplikacije User interface-UI
 
-shinyUI( 
+ui <- 
   navbarPage(
     #glavni naslov i izbor teme
     
@@ -267,4 +267,4 @@ shinyUI(
                                      ili sugestije pišite na sledeću", a("email adresu.", href = "mailto:medijskikonkursi@gmail.com"), align = "justify"))
     )
   )
-)
+
