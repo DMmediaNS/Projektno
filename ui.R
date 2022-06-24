@@ -3,7 +3,7 @@
 
 #Kreiranje izgleda aplikacije User interface-UI
 
-ui <- 
+ 
   navbarPage(
     #glavni naslov i izbor teme
     
